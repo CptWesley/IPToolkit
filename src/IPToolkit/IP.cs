@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using IPToolkit.Retrievers;
+using IPToolkit.Retrievers.IPv4;
+using IPToolkit.Retrievers.IPv6;
 
 namespace IPToolkit
 {
@@ -20,13 +22,19 @@ namespace IPToolkit
         {
             new WtfIsMyIpRetriever(),
             new AwsRetriever(),
+            new IpifyV4Retriever(),
+            new WhatIsMyIpAddressV4Retriever(),
             new IcanhazipV4Retriever(),
             new DynDnsRetriever(),
+            new MyIpV4Retriever(),
         };
 
         private static readonly IRetriever[] IPv6Retrievers = new IRetriever[]
         {
+            new IpifyV6Retriever(),
+            new WhatIsMyIpAddressV6Retriever(),
             new IcanhazipV6Retriever(),
+            new MyIpV6Retriever(),
         };
 
         /// <summary>

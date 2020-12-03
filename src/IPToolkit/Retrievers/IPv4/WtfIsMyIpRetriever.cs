@@ -1,4 +1,4 @@
-﻿namespace IPToolkit.Retrievers
+﻿namespace IPToolkit.Retrievers.IPv4
 {
     /// <summary>
     /// Class for retrieving IPv4 addresses from wtfismyip.
@@ -10,7 +10,7 @@
         /// Initializes a new instance of the <see cref="WtfIsMyIpRetriever"/> class.
         /// </summary>
         public WtfIsMyIpRetriever()
-            : base("https://wtfismyip.com/text")
+            : base("http://wtfismyip.com/text")
         {
         }
     }

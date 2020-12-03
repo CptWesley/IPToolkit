@@ -1,4 +1,4 @@
-﻿namespace IPToolkit.Retrievers
+﻿namespace IPToolkit.Retrievers.IPv4
 {
     /// <summary>
     /// Class for retrieving IPv4 addresses from icanhazip.
