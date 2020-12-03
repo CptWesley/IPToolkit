@@ -6,7 +6,7 @@ namespace IPToolkit.Example
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(IP.GetPublicIPv4());
+            Console.WriteLine(IP.GetPublicIPv4Async().Result);
         }
     }
 }
