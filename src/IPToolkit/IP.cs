@@ -84,32 +84,134 @@ namespace IPToolkit
             => GetAsync(IPv6Retrievers, TryGetPublicAsync);
 
         /// <summary>
+        /// Gets the local IPv4 addresses synchronously.
+        /// </summary>
+        /// <returns>Local IPv4 addresses that can be found.</returns>
+        public static string[] GetLocalIPv4s()
+            => IPLookupTable.CreateLocal().GetIPv4Addresses();
+
+        /// <summary>
+        /// Gets the local IPv6 addresses synchronously.
+        /// </summary>
+        /// <returns>Local IPv6 addresses that can be found.</returns>
+        public static string[] GetLocalIPv6s()
+            => IPLookupTable.CreateLocal().GetIPv6Addresses();
+
+        /// <summary>
         /// Gets the local IPv4 address synchronously.
         /// </summary>
         /// <returns>Local IPv4 address if it can be found. <c>null</c> if it can't be determined.</returns>
         public static string? GetLocalIPv4()
-            => Get(IPv4LocalRetriever, TryGetLocalV4);
+            => GetLocalIPv4(true);
 
         /// <summary>
         /// Gets the local IPv4 address asynchronously.
         /// </summary>
         /// <returns>Local IPv4 address if it can be found. <c>null</c> if it can't be determined.</returns>
         public static Task<string?> GetLocalIPv4Async()
-            => GetAsync(IPv4LocalRetriever, TryGetLocalV4Async);
+            => GetLocalIPv4Async(true);
 
         /// <summary>
         /// Gets the local IPv6 address synchronously.
         /// </summary>
         /// <returns>Local IPv6 address if it can be found. <c>null</c> if it can't be determined.</returns>
         public static string? GetLocalIPv6()
-            => Get(IPv6LocalRetriever, TryGetLocalV6);
+            => GetLocalIPv6(true);
 
         /// <summary>
         /// Gets the local IPv6 address asynchronously.
         /// </summary>
         /// <returns>Local IPv6 address if it can be found. <c>null</c> if it can't be determined.</returns>
         public static Task<string?> GetLocalIPv6Async()
-            => GetAsync(IPv6LocalRetriever, TryGetLocalV6Async);
+            => GetLocalIPv6Async(true);
+
+        private static string? GetLocalIPv4(bool recurse)
+        {
+            string? ip = Get(IPv4LocalRetriever, TryGetLocalV4);
+
+            if (ip != null)
+            {
+                return ip;
+            }
+
+            if (recurse)
+            {
+                string? ip6 = GetLocalIPv6(false);
+
+                if (ip6 != null)
+                {
+                    return IPLookupTable.CreateLocal().GetIPv4(ip6);
+                }
+            }
+
+            return IPLookupTable.CreateLocal().GetIPv4Addresses().FirstOrDefault();
+        }
+
+        private static async Task<string?> GetLocalIPv4Async(bool recurse)
+        {
+            string? ip = await GetAsync(IPv4LocalRetriever, TryGetLocalV4Async).ConfigureAwait(false);
+
+            if (ip != null)
+            {
+                return ip;
+            }
+
+            if (recurse)
+            {
+                string? ip6 = await GetLocalIPv6Async(false).ConfigureAwait(false);
+
+                if (ip6 != null)
+                {
+                    return IPLookupTable.CreateLocal().GetIPv4(ip6);
+                }
+            }
+
+            return IPLookupTable.CreateLocal().GetIPv4Addresses().FirstOrDefault();
+        }
+
+        private static string? GetLocalIPv6(bool recurse)
+        {
+            string? ip = Get(IPv6LocalRetriever, TryGetLocalV6);
+
+            if (ip != null)
+            {
+                return ip;
+            }
+
+            if (recurse)
+            {
+                string? ip4 = GetLocalIPv4(false);
+
+                if (ip4 != null)
+                {
+                    return IPLookupTable.CreateLocal().GetIPv6(ip4);
+                }
+            }
+
+            return IPLookupTable.CreateLocal().GetIPv6Addresses().FirstOrDefault();
+        }
+
+        private static async Task<string?> GetLocalIPv6Async(bool recurse)
+        {
+            string? ip = await GetAsync(IPv6LocalRetriever, TryGetLocalV6Async).ConfigureAwait(false);
+
+            if (ip != null)
+            {
+                return ip;
+            }
+
+            if (recurse)
+            {
+                string? ip4 = await GetLocalIPv4Async(false).ConfigureAwait(false);
+
+                if (ip4 != null)
+                {
+                    return IPLookupTable.CreateLocal().GetIPv6(ip4);
+                }
+            }
+
+            return IPLookupTable.CreateLocal().GetIPv6Addresses().FirstOrDefault();
+        }
 
         [SuppressMessage("Microsoft.Design", "CA1031", Justification = "We actually want to catch any error.")]
         private static (bool Success, string Result) TryGetPublic(IRetriever retriever)
